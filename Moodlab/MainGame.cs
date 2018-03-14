@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -9,13 +11,28 @@ namespace Moodlab
     /// </summary>
     public class MainGame : Game
     {
+        //Testing Render
+        const int TILE_SIZE = 10;
+        readonly Vector screenSize = new Vector(800, 600);
+        const int cameraSpeed = 2;
+        Texture2D nullTexture;
+        Vector cameraPosition = new Vector(0, 0);
+
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        
+
+        Map map;
+
         public MainGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            graphics.PreferredBackBufferWidth = screenSize.X;
+            graphics.PreferredBackBufferHeight = screenSize.Y;
+            graphics.ApplyChanges();
+
+            map = new Map(new Vector(99, 99));
         }
 
         /// <summary>
@@ -26,7 +43,7 @@ namespace Moodlab
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            map.Generate();
 
             base.Initialize();
         }
@@ -41,6 +58,8 @@ namespace Moodlab
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            nullTexture = new Texture2D(GraphicsDevice, 1, 1);
+            nullTexture.SetData(new[] { Color.White });
         }
 
         /// <summary>
@@ -62,7 +81,17 @@ namespace Moodlab
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+                cameraPosition.Y -= cameraSpeed;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                cameraPosition.Y += cameraSpeed;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                cameraPosition.X -= cameraSpeed;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                cameraPosition.X += cameraSpeed;
 
             base.Update(gameTime);
         }
@@ -75,7 +104,26 @@ namespace Moodlab
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+
+            Vector screenTileCount = screenSize.Map(i => i / TILE_SIZE + 1);
+            Vector start = cameraPosition.Map(i => Math.Max(0, i / TILE_SIZE));
+            Vector offset = cameraPosition.Map(i => i > 0 ? i % TILE_SIZE : -i);
+
+            for (int x = 0; x < Math.Min(screenTileCount.X, map.Size.X-start.X); x++)
+            {
+                for (int y = 0; y < Math.Min(screenTileCount.Y, map.Size.Y-start.Y); y++)
+                {
+                    Tile tile = map.Data[x + start.X, y + start.Y];
+                    if(tile != null)
+                        spriteBatch.Draw(
+                            nullTexture,
+                            new Rectangle(x * TILE_SIZE - offset.X, y * TILE_SIZE - offset.Y, TILE_SIZE, TILE_SIZE),
+                            tile.Color
+                        );
+                }
+            }
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
