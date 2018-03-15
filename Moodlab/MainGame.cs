@@ -12,17 +12,15 @@ namespace Moodlab
     public class MainGame : Game
     {
         //Testing Render
-        const int TILE_SIZE = 10;
         readonly Vector screenSize = new Vector(800, 600);
-        const int cameraSpeed = 2;
         Texture2D nullTexture;
-        Vector cameraPosition = new Vector(0, 0);
 
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
         Map map;
+        Entities.Player player;
 
         public MainGame()
         {
@@ -32,7 +30,9 @@ namespace Moodlab
             graphics.PreferredBackBufferHeight = screenSize.Y;
             graphics.ApplyChanges();
 
-            map = new Map(new Vector(99, 99));
+            map = new Map(new Vector(11, 11));
+            player = new Entities.Player();
+            map.AddEntity(player);
         }
 
         /// <summary>
@@ -81,17 +81,14 @@ namespace Moodlab
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
-                cameraPosition.Y -= cameraSpeed;
+            map.Update(gameTime);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                cameraPosition.Y += cameraSpeed;
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
-                cameraPosition.X -= cameraSpeed;
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
-                cameraPosition.X += cameraSpeed;
+            /*Vector position = new Vector(
+                (cameraPosition.X + screenSize.X / 2) / Tiles.Tile.SIZE,
+                (cameraPosition.Y + screenSize.Y / 2) / Tiles.Tile.SIZE
+            );
+            if(position.X >= 0 && position.Y >= 0 && position.X < map.Size.X && position.Y < map.Size.Y)
+                map.Set(position, new Wall());*/
 
             base.Update(gameTime);
         }
@@ -106,23 +103,28 @@ namespace Moodlab
 
             spriteBatch.Begin();
 
-            Vector screenTileCount = screenSize.Map(i => i / TILE_SIZE + 1);
-            Vector start = cameraPosition.Map(i => Math.Max(0, i / TILE_SIZE));
-            Vector offset = cameraPosition.Map(i => i > 0 ? i % TILE_SIZE : -i);
+            Vector screenTileCount = screenSize.Map(i => i / Tiles.Tile.SIZE);
 
-            for (int x = 0; x < Math.Min(screenTileCount.X, map.Size.X-start.X); x++)
+            for (int x = Math.Max(0, (int)Math.Floor(player.Position.X - screenTileCount.X / 2)); x < Math.Min(map.Size.X, (int)Math.Ceiling(player.Position.X + screenTileCount.X / 2) + 1); x++)
             {
-                for (int y = 0; y < Math.Min(screenTileCount.Y, map.Size.Y-start.Y); y++)
+                for (int y = Math.Max(0, (int)Math.Floor(player.Position.Y - screenTileCount.Y / 2)); y < Math.Min(map.Size.Y, (int)Math.Ceiling(player.Position.Y + screenTileCount.Y / 2) + 1); y++)
                 {
-                    Tile tile = map.Data[x + start.X, y + start.Y];
+                    Tiles.Tile tile = map.Tiles[x, y];
                     if(tile != null)
                         spriteBatch.Draw(
                             nullTexture,
-                            new Rectangle(x * TILE_SIZE - offset.X, y * TILE_SIZE - offset.Y, TILE_SIZE, TILE_SIZE),
+                            new Rectangle((int)((x - player.Position.X - 0.5f) * Tiles.Tile.SIZE) + screenSize.X / 2, (int)((y - player.Position.Y - 0.5f) * Tiles.Tile.SIZE) + screenSize.Y / 2, Tiles.Tile.SIZE, Tiles.Tile.SIZE),
                             tile.Color
                         );
                 }
             }
+
+            spriteBatch.Draw(nullTexture, new Rectangle((screenSize.X - Tiles.Tile.SIZE) / 2, (screenSize.Y - Tiles.Tile.SIZE) / 2, (int)(player.Size.X * Tiles.Tile.SIZE), (int)(player.Size.Y * Tiles.Tile.SIZE)), Color.GreenYellow);
+            Console.WriteLine(player.Position);
+
+            //DEBUG
+            spriteBatch.Draw(nullTexture, new Rectangle(screenSize.X / 2, screenSize.Y / 2, 2, 2), Color.LimeGreen);
+
             spriteBatch.End();
 
             base.Draw(gameTime);
