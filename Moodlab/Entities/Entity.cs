@@ -4,7 +4,7 @@ namespace Moodlab.Entities
 {
     public abstract class Entity
     {
-        public Vector2 Position { get; private set; }
+        public Vector2 Position { get; protected set; }
 
         public Entity(Vector2 position){
             Position = position;

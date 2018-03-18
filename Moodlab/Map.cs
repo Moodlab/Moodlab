@@ -6,16 +6,16 @@ namespace Moodlab
 {
     public class Map
     {
-        public Tiles.Tile[,] Tiles { get; private set; }
+        public Tiles.Tile[,] TileMap { get; private set; }
         public List<Entities.Entity> Entities { get; private set; }
-        public Vector Size {
+        public Position2 Size {
             get {
-                return new Vector(Tiles.GetLength(0), Tiles.GetLength(1));
+                return new Position2(TileMap.GetLength(0), TileMap.GetLength(1));
             }
         }
 
-        public Map(Vector size){
-            Tiles = new Tiles.Tile[size.X, size.Y];
+        public Map(Position2 size){
+            TileMap = new Tiles.Tile[size.X, size.Y];
             Entities = new List<Entities.Entity>();
         }
 
@@ -32,20 +32,26 @@ namespace Moodlab
 
         public Tiles.Tile GetTile(int x, int y)
         {
-            if(x > 0 && y > 0 && x < Size.X && y < Size.Y)
-                return Tiles[x, y];
+            if(x >= 0 && y >= 0 && x < Size.X && y < Size.Y)
+                return TileMap[x, y];
 
             return null;
         }
-        public Tiles.Tile GetTile(Vector postion)
+        public Tiles.Tile GetTile(Position2 postion)
         {
             return GetTile(postion.X, postion.Y);
         }
 
-        public void SetTile(int x, int y, Tiles.Tile tile){
-            Tiles[x, y] = tile;
+        public bool TryGetTile(int x, int y, out Tiles.Tile tile){
+            tile = GetTile(x, y);
+            return tile != null;
         }
-        public void SetTile(Vector postion, Tiles.Tile tile){
+
+        public void SetTile(int x, int y, Tiles.Tile tile){
+            if (x >= 0 && y >= 0 && x < Size.X && y < Size.Y)   
+                TileMap[x, y] = tile;
+        }
+        public void SetTile(Position2 postion, Tiles.Tile tile){
             SetTile(postion.X, postion.Y, tile);
         }
 
@@ -69,6 +75,8 @@ namespace Moodlab
                     );
                 }
             }
+
+            SetTile(Size.X / 2, Size.Y / 2, new Tiles.Door(Tiles.OrientedTile.Orientations.Up));
 
             /*
             List<Door> doors = new List<Door>(){
