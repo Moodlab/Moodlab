@@ -16,7 +16,6 @@ namespace Moodlab
         Texture2D nullTexture;
         int tileSize = Tiles.Tile.SIZE;
 
-
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -111,7 +110,7 @@ namespace Moodlab
                 for (int y = Math.Max(0, (int)Math.Floor(player.Position.Y - screenTileCount.Y / 2)); y < Math.Min(map.Size.Y, (int)Math.Ceiling(player.Position.Y + screenTileCount.Y / 2) + 1); y++)
                 {
                     Tiles.Tile tile = map.TileMap[x, y];
-                    if(tile != null)
+                    if (tile != null)
                         spriteBatch.Draw(
                             nullTexture,
                             new Rectangle((int)((x - player.Position.X - 0.5f) * tileSize) + screenSize.X / 2, (int)((y - player.Position.Y - 0.5f) * tileSize) + screenSize.Y / 2, tileSize, tileSize),

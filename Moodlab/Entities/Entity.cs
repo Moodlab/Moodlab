@@ -6,11 +6,13 @@ namespace Moodlab.Entities
     {
         public Vector2 Position { get; protected set; }
 
-        public Entity(Vector2 position){
+        public Entity(Vector2 position)
+        {
             Position = position;
         }
 
-        public virtual void Move(Vector2 motion, Map map){
+        public virtual void Move(Vector2 motion, Map map)
+        {
             Position += motion;
         }
 

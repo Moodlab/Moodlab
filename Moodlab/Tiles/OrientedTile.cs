@@ -7,7 +7,8 @@ namespace Moodlab.Tiles
         public enum Orientations { Up, Down, Left, Right }
         public Orientations Orientation { get; protected set; }
 
-        public OrientedTile(Orientations orientation){
+        public OrientedTile(Orientations orientation)
+        {
             Orientation = orientation;
         }
     }

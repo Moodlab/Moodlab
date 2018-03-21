@@ -8,6 +8,6 @@ namespace Moodlab.Tiles
         public abstract bool Solid { get; }
         public abstract Color Color { get; }
 
-        public virtual void OnCollide(Entities.Entity entity){ }
+        public virtual void OnCollide(Entities.Entity entity) { }
     }
 }

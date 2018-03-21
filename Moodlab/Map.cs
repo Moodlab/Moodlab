@@ -8,31 +8,36 @@ namespace Moodlab
     {
         public Tiles.Tile[,] TileMap { get; private set; }
         public List<Entities.Entity> Entities { get; private set; }
-        public Position2 Size {
-            get {
+        public Position2 Size
+        {
+            get
+            {
                 return new Position2(TileMap.GetLength(0), TileMap.GetLength(1));
             }
         }
 
-        public Map(Position2 size){
+        public Map(Position2 size)
+        {
             TileMap = new Tiles.Tile[size.X, size.Y];
             Entities = new List<Entities.Entity>();
         }
 
-        public void Update(GameTime gameTime){
+        public void Update(GameTime gameTime)
+        {
             foreach (Entities.Entity entity in Entities)
             {
                 entity.Update(gameTime, this);
             }
         }
 
-        public void AddEntity(Entities.Entity entity){
+        public void AddEntity(Entities.Entity entity)
+        {
             Entities.Add(entity);
         }
 
         public Tiles.Tile GetTile(int x, int y)
         {
-            if(x >= 0 && y >= 0 && x < Size.X && y < Size.Y)
+            if (x >= 0 && y >= 0 && x < Size.X && y < Size.Y)
                 return TileMap[x, y];
 
             return null;
@@ -42,20 +47,28 @@ namespace Moodlab
             return GetTile(postion.X, postion.Y);
         }
 
-        public bool TryGetTile(int x, int y, out Tiles.Tile tile){
+        public bool TryGetTile(int x, int y, out Tiles.Tile tile)
+        {
             tile = GetTile(x, y);
             return tile != null;
         }
+        public bool TryGetTile(Position2 postion, out Tiles.Tile tile)
+        {
+            return TryGetTile(postion.X, postion.Y, out tile);
+        }
 
-        public void SetTile(int x, int y, Tiles.Tile tile){
-            if (x >= 0 && y >= 0 && x < Size.X && y < Size.Y)   
+        public void SetTile(int x, int y, Tiles.Tile tile)
+        {
+            if (x >= 0 && y >= 0 && x < Size.X && y < Size.Y)
                 TileMap[x, y] = tile;
         }
-        public void SetTile(Position2 postion, Tiles.Tile tile){
+        public void SetTile(Position2 postion, Tiles.Tile tile)
+        {
             SetTile(postion.X, postion.Y, tile);
         }
 
-        public void Generate(){
+        public void Generate()
+        {
             // TODO: make that possible
             //const int MIN_ROOM_SIZE = 4, MAX_ROOM_SIZE = 16;
 
@@ -71,7 +84,7 @@ namespace Moodlab
                     SetTile(
                         x,
                         y,
-                        (x == 0 || y == 0 || x == Size.X-1 || y == Size.Y-1) ? (Tiles.Tile)new Tiles.Wall() : (Tiles.Tile)new Tiles.Ground()
+                        (x == 0 || y == 0 || x == Size.X - 1 || y == Size.Y - 1) ? (Tiles.Tile)new Tiles.Wall() : (Tiles.Tile)new Tiles.Ground()
                     );
                 }
             }
