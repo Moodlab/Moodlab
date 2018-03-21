@@ -15,10 +15,8 @@ namespace Moodlab.Entities
 
         public override void Move(Vector2 motion, Map map)
         {
-            // TODO: Include Size
-
             //Pre move check
-            List<Position2> checkedPostions = new List<Position2>();
+            List<Position2> checkedPositions = new List<Position2>();
             Position2 currentPos;
             Tiles.Tile currentTile;
             for (int x = 0; x <= (int)Math.Ceiling(Size.X); x++)
@@ -26,7 +24,7 @@ namespace Moodlab.Entities
                 for (int y = 0; y <= (int)Math.Ceiling(Size.Y); y++)
                 {
                     currentPos = Position2.Round(Position - Size / 2 + new Vector2(Math.Min(x, Size.X), Math.Min(y, Size.Y)));
-                    if (!checkedPostions.Contains(currentPos))
+                    if (!checkedPositions.Contains(currentPos))
                     {
                         currentTile = map.GetTile(currentPos);
                         if (currentTile != null)
@@ -35,7 +33,7 @@ namespace Moodlab.Entities
                         if (currentTile == null || currentTile.Solid)
                             throw new Exception("SolidEntity in a wall..."); //FIXME: What to do ???
 
-                        checkedPostions.Add(currentPos);
+                        checkedPositions.Add(currentPos);
                     }
                 }
             }
@@ -52,7 +50,7 @@ namespace Moodlab.Entities
             for (int x = 0; x <= (int)Math.Ceiling(Size.X) && motion.Y != 0; x++)
             {
                 currentPos = Position2.Round(Position + new Vector2(Math.Min(x, Size.X) - Size.X / 2, Size.Y * (motion.Y > 0 ? 1 : -1)));
-                if (!checkedPostions.Contains(currentPos))
+                if (!checkedPositions.Contains(currentPos))
                 {
                     currentTile = map.GetTile(currentPos);
                     if (currentTile != null)
@@ -61,7 +59,7 @@ namespace Moodlab.Entities
                     if (newMotion.Y != 0 && (currentTile == null || currentTile.Solid))
                         newMotion.Y = 0;
 
-                    checkedPostions.Add(currentPos);
+                    checkedPositions.Add(currentPos);
                 }
             }
 
@@ -71,10 +69,10 @@ namespace Moodlab.Entities
                 currentPos = Position2.Round(Position + new Vector2(Size.X * (motion.X > 0 ? 1 : -1), Math.Min(y, Size.Y) - Size.Y / 2));
                 //For diagonal motion, need to check collisions for X or Y
                 currentTile = map.GetTile(currentPos);
-                if (currentTile != null && !checkedPostions.Contains(currentPos))
+                if (currentTile != null && !checkedPositions.Contains(currentPos))
                 {
                     currentTile.OnCollide(this);
-                    checkedPostions.Add(currentPos);
+                    checkedPositions.Add(currentPos);
                 }
 
                 if (newMotion.X != 0 && (currentTile == null || currentTile.Solid))
