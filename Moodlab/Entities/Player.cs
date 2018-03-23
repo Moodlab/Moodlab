@@ -13,10 +13,7 @@ namespace Moodlab.Entities
             Speed = 0.1f;
         }
 
-        public override void Move(Vector2 motion, Map map)
-        {
-            base.Move(motion * Speed, map);
-        }
+        public override void Move(Vector2 motion, Map map) => base.Move(motion * Speed, map);
 
         public override void Update(GameTime gameTime, Map map)
         {
@@ -36,7 +33,6 @@ namespace Moodlab.Entities
 
             if (motion.X != 0 && motion.Y != 0)
                 motion *= (float)(Math.Sqrt(2) / 2);
-
 
             Move(motion, map);
         }

@@ -6,6 +6,8 @@ namespace Moodlab.Entities
 {
     public abstract class SolidEntity : Entity
     {
+        public const float COLLISION_OFFSET = 0.001f;
+
         public Vector2 Size { get; protected set; }
 
         public SolidEntity(Vector2 position, Vector2 size) : base(position)
@@ -39,7 +41,6 @@ namespace Moodlab.Entities
             }
 
             //Moving check
-            //TODO: Proper collision motion = offset
             //TODO: Include motion steps for high speed collisions
             //int motionSteps = (int)Math.Ceiling(Math.Max(Math.Abs(motion.X), Math.Abs(motion.Y)));
             //for (int currentStep = 1; currentStep <= motionSteps; currentStep++)
@@ -49,7 +50,7 @@ namespace Moodlab.Entities
             //Up Down
             for (int x = 0; x <= (int)Math.Ceiling(Size.X) && motion.Y != 0; x++)
             {
-                currentPos = Position2.Round(Position + new Vector2(Math.Min(x, Size.X) - Size.X / 2, Size.Y * (motion.Y > 0 ? 1 : -1)));
+                currentPos = Position2.Round(Position + new Vector2(Math.Min(x, Size.X) - Size.X / 2, Size.Y * (motion.Y > 0 ? 1 : -1) / 2 + motion.Y));
                 if (!checkedPositions.Contains(currentPos))
                 {
                     currentTile = map.GetTile(currentPos);
@@ -57,7 +58,7 @@ namespace Moodlab.Entities
                         currentTile.OnCollide(this);
 
                     if (newMotion.Y != 0 && (currentTile == null || currentTile.Solid))
-                        newMotion.Y = 0;
+                        newMotion.Y = currentPos.Y - Position.Y + (Size.Y / 2 + 0.5f + COLLISION_OFFSET) * (motion.Y > 0 ? -1 : 1);
 
                     checkedPositions.Add(currentPos);
                 }
@@ -66,7 +67,7 @@ namespace Moodlab.Entities
             //Left Right
             for (int y = 0; y <= (int)Math.Ceiling(Size.Y) && motion.X != 0; y++)
             {
-                currentPos = Position2.Round(Position + new Vector2(Size.X * (motion.X > 0 ? 1 : -1), Math.Min(y, Size.Y) - Size.Y / 2));
+                currentPos = Position2.Round(Position + new Vector2(Size.X * (motion.X > 0 ? 1 : -1) / 2 + motion.X, Math.Min(y, Size.Y) - Size.Y / 2));
                 //For diagonal motion, need to check collisions for X or Y
                 currentTile = map.GetTile(currentPos);
                 if (currentTile != null && !checkedPositions.Contains(currentPos))
@@ -76,7 +77,7 @@ namespace Moodlab.Entities
                 }
 
                 if (newMotion.X != 0 && (currentTile == null || currentTile.Solid))
-                    newMotion.X = 0;
+                    newMotion.X = currentPos.X - Position.X + (Size.X / 2 + 0.5f + COLLISION_OFFSET) * (motion.X > 0 ? -1 : 1);
             }
             //}
 

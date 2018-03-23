@@ -29,10 +29,7 @@ namespace Moodlab
             );
         }
 
-        public static explicit operator Vector2(Position2 v)
-        {
-            return new Vector2(v.X, v.Y);
-        }
+        public static explicit operator Vector2(Position2 v) => new Vector2(v.X, v.Y);
 
         public override string ToString()
         {
