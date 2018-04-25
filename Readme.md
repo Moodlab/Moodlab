@@ -16,5 +16,5 @@ Moodlab is a Dungeon Crawlers Project
 ## License
 
 For future possible commercial reasons, this project is under proprietary license.
-If you want to use a part of our work, contacting us.
+If you want to use a part of our work, contact us.
 See the [License](License) file for the complete text of the license.
